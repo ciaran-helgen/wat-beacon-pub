@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<sdf version="1.5">
+<sdf version="1.4">
   <world name="default">
     <!-- Ground -->
     <include>
@@ -29,7 +29,7 @@
             </cylinder>
           </geometry>
         </visual>
-        <collision name="base1">
+        <collision name="base">
           <geometry>
             <box>
               <size>.05 .05 .05</size>
@@ -52,6 +52,7 @@
     </model>
     <!-- Wireless receiver sensor model -->
     <model name="wirelessReceiver">
+      <plugin name="BeaconRepub" filename="libbeacon_pub.so"/>
       <static>true</static>
       <pose>0 -3 0.05 0 0 0</pose>
       <link name="link">
@@ -74,7 +75,7 @@
             </cylinder>
           </geometry>
         </visual>
-        <collision name="base1">
+        <collision name="base">
           <geometry>
             <box>
               <size>.05 .05 .05</size>
@@ -82,7 +83,6 @@
           </geometry>
         </collision>
         <sensor name="wirelessReceiver" type="wireless_receiver">
-          <plugin name="my_plugin" filename="libmy_receiver.so"/>
           <pose>0 0 .04 0 0 0</pose>
           <always_on>1</always_on>
           <update_rate>1</update_rate>

@@ -1,0 +1,8 @@
+<launch>
+  <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched 
+  the empty_world.launch file starts the important ros api plugin so we don't need  to worry about that-->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find beacon_pub)/worlds/wireless.world"/>
+    <!-- more default parameters can be changed here -->
+  </include>
+</launch>
