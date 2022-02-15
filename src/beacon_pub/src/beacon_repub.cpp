@@ -11,8 +11,8 @@
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/shared_ptr.hpp>
 
-
 #include <ros/ros.h>
+#include <std_msgs/Float32.h>
 
 namespace gazebo
 {
@@ -26,6 +26,13 @@ class BeaconRepub : public ModelPlugin
 
   // A subscriber to a named topic.
   private: transport::SubscriberPtr sub;
+
+  //ROS node for publisher
+  ros::NodeHandle n;
+
+  //ROS publisher
+  ros::Publisher pub;
+
 
   public: void Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
   {
@@ -51,21 +58,35 @@ class BeaconRepub : public ModelPlugin
 
     // Subscribe to the topic, and register a callback
     this->sub = this->node->Subscribe(topicName, &BeaconRepub::OnMsg, this);
+
+    //Begin publisher for ROS message
+    this->pub = n.advertise<std_msgs::Float32>("receiver", 1000);
+
   }
 
-  public: void OnMsg(ConstWirelessNodesPtr &msg)
+  public: void OnMsg(ConstWirelessNodesPtr &gmsg)
   {
     
-    if(msg!=0)
-    {
+    //if(gmsg!=0)
+    //{
       // get signal level of zeroth wirelessnode in message 
       // wireless_nodes.proto: message consists of repeated 'node' messages
       // node(n) accesses the nth WirelessNode, whose data can be accessed
       // as normal (essid, signal_level, frequency)
-      const double siglevel = msg->node(0).signal_level();
+      double siglevel = gmsg->node(0).signal_level();
       std::cout << "Signal Level: " << siglevel << std::endl;
-    }
+
+      
+      std_msgs::Float32 rosmsg;
+      // //build message
+      rosmsg.data = siglevel;
+      this->pub.publish(rosmsg);
+      ros::spinOnce();
+
+    //}
     ROS_INFO("Callback Called!");
+     // Create ROS node and init
+    
   }
 
 };
