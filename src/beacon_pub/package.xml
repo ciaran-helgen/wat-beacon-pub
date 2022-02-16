@@ -2,7 +2,7 @@
 <package format="2">
   <name>beacon_pub</name>
   <version>0.0.0</version>
-  <description>The beacon_pub package</description>
+  <description>A simple Gazebo plugin to republish transciever data as a ROS message</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
@@ -63,6 +63,6 @@
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->
-
+    <gazebo_ros plugin_path="${prefix}/../../lib" gazebo_media_path="${prefix}" />
   </export>
 </package>
