@@ -13,6 +13,7 @@
 
 #include <ros/ros.h>
 #include <std_msgs/Float32.h>
+#include <beacon_pub/beacon.h>
 
 namespace gazebo
 {
@@ -26,6 +27,10 @@ class BeaconRepub : public ModelPlugin
 
   // A subscriber to a named topic.
   private: transport::SubscriberPtr sub;
+
+  private: unsigned int sequence_ctr = 0;
+
+  private: std::string frame_id;
 
   //ROS node for publisher
   ros::NodeHandle n;
@@ -60,7 +65,9 @@ class BeaconRepub : public ModelPlugin
     this->sub = this->node->Subscribe(topicName, &BeaconRepub::OnMsg, this);
 
     //Begin publisher for ROS message
-    this->pub = n.advertise<std_msgs::Float32>("receiver", 1000);
+    //commented out example float32 publisher
+    //this->pub = n.advertise<std_msgs::Float32>("receiver", 1000);
+    this->pub = n.advertise<beacon_pub::beacon>("receiver", 1000);
 
   }
 
@@ -73,19 +80,38 @@ class BeaconRepub : public ModelPlugin
       // wireless_nodes.proto: message consists of repeated 'node' messages
       // node(n) accesses the nth WirelessNode, whose data can be accessed
       // as normal (essid, signal_level, frequency)
-      double siglevel = gmsg->node(0).signal_level();
-      std::cout << "Signal Level: " << siglevel << std::endl;
-
+      double gz_signal_level = gmsg->node(0).signal_level();
+      double gz_frequency = gmsg->node(0).frequency();
+      std::string gz_essid = gmsg->node(0).essid();
       
-      std_msgs::Float32 rosmsg;
+      
+
+      //std::cout << "Signal Level: " << siglevel << std::endl;
+
+      //commented out example float32 message
+      //std_msgs::Float32 rosmsg;
+      beacon_pub::beacon rosmsg;
       // //build message
-      rosmsg.data = siglevel;
+      //Header
+      rosmsg.header.seq = this->sequence_ctr;
+      //TODO: Get sim time from /clock
+        //TODO: Only get if /use_sim_time param is true
+      rosmsg.header.stamp = ros::Time::now();
+      //TODO: get frame ID from sdf. Store frame ID as parameter of this class
+      rosmsg.header.frame_id = "placeholder_frame"; //this->frame_id
+
+      // beacon info
+      rosmsg.signal_level = gz_signal_level;
+      rosmsg.essid = gz_essid;
+      rosmsg.frequency = gz_frequency;
+
       this->pub.publish(rosmsg);
       ros::spinOnce();
-
+      this->sequence_ctr ++;
     //}
     ROS_INFO("Callback Called!");
      // Create ROS node and init
+    
     
   }
 
