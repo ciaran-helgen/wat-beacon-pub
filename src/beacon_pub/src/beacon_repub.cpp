@@ -72,8 +72,9 @@ class BeaconRepub : public ModelPlugin
     this->node = transport::NodePtr(new transport::Node());
     
     this->node->Init();
-    std::string nodename = "world name: /gazebo/" + this->model->GetWorld()->Name() + "/" + this->model->GetName() + "/";
-    ROS_INFO(nodename.c_str());
+    
+    //std::string nodename = "world name: /gazebo/" + this->model->GetWorld()->Name() + "/" + this->model->GetName() + "/";
+    //ROS_INFO(nodename.c_str());
 
     // Get the frame of the message from the frameName tag in the plugin, if it exists
     if (!this->sdf->HasElement("frame_name"))
@@ -83,9 +84,7 @@ class BeaconRepub : public ModelPlugin
     }
     else
     {
-      ROS_INFO("Before");
       this->frame_name = this->sdf->Get<std::string>("frame_name");
-      ROS_INFO("After");
     }
   
     //Get the topic of the message from the topicName tag in the plugin, if it exists
