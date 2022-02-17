@@ -1,8 +1,10 @@
 #ifndef _BEACON_REPUB_PLUGIN_HH_
 #define _BEACON_REPUB_PLUGIN_HH_
 
+#include <gazebo/gazebo.hh>
 #include <gazebo/common/Plugin.hh>
 #include <gazebo/sensors/Sensor.hh>
+#include <gazebo/sensors/sensors.hh>
 #include <gazebo/physics/Model.hh>
 #include <gazebo/physics/World.hh>
 #include <gazebo/transport/transport.hh>
@@ -18,11 +20,11 @@
 
 namespace gazebo
 {
-class BeaconRepub : public ModelPlugin
+class BeaconRepub : public SensorPlugin
 {
 
-  // Stores the Model Data
-  private: physics::ModelPtr model;
+  // Pointer to sensor instance
+  private: sensors::WirelessReceiverPtr receiverSensor;
 
   // Stores SDF element data
   private: sdf::ElementPtr sdf;
@@ -55,7 +57,7 @@ class BeaconRepub : public ModelPlugin
   ros::Publisher pub;
 
 
-  public: void Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
+  public: void Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sdf)
   {
     // Make sure the ROS node for Gazebo has already been initialized
     if (!ros::isInitialized())
@@ -65,7 +67,8 @@ class BeaconRepub : public ModelPlugin
       return;
     }
 
-    this->model = _parent;
+    this->receiverSensor = std::dynamic_pointer_cast<sensors::WirelessReceiver>(_sensor);
+
     this->sdf = _sdf;
 
     // Create the node
@@ -169,6 +172,6 @@ class BeaconRepub : public ModelPlugin
 
 };
 
-GZ_REGISTER_MODEL_PLUGIN(BeaconRepub)
+GZ_REGISTER_SENSOR_PLUGIN(BeaconRepub)
 }
 #endif
