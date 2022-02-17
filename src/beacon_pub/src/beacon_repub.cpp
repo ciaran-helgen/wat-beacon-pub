@@ -6,16 +6,13 @@
 #include <gazebo/sensors/Sensor.hh>
 #include <gazebo/sensors/sensors.hh>
 #include <gazebo/physics/Model.hh>
-#include <gazebo/physics/World.hh>
 #include <gazebo/transport/transport.hh>
 #include <gazebo/transport/Node.hh>
 #include <gazebo/msgs/msgs.hh>
-#include <boost/algorithm/string/replace.hpp>
 #include <boost/shared_ptr.hpp>
 #include <string>
 
 #include <ros/ros.h>
-#include <std_msgs/Float32.h>
 #include <beacon_pub/beacon.h>
 
 namespace gazebo
@@ -26,13 +23,13 @@ class BeaconRepub : public SensorPlugin
   // Pointer to sensor instance
   private: sensors::WirelessReceiverPtr receiverSensor;
 
-  // Stores SDF element data
+  // Pointer to SDF element
   private: sdf::ElementPtr sdf;
 
   //A node used for transport
   private: transport::NodePtr node;
 
-  // A subscriber to a named topic.
+  // Subscriber to gazebo topic (WirelessNodes message)
   private: transport::SubscriberPtr sub;
 
   // Subscriber to get sim time
@@ -67,6 +64,7 @@ class BeaconRepub : public SensorPlugin
       return;
     }
 
+    // Convert the base sensor pointer to a WirelessReceiver pointer
     this->receiverSensor = std::dynamic_pointer_cast<sensors::WirelessReceiver>(_sensor);
 
     this->sdf = _sdf;
@@ -75,11 +73,8 @@ class BeaconRepub : public SensorPlugin
     this->node = transport::NodePtr(new transport::Node());
     
     this->node->Init();
-    
-    //std::string nodename = "world name: /gazebo/" + this->model->GetWorld()->Name() + "/" + this->model->GetName() + "/";
-    //ROS_INFO(nodename.c_str());
-
-    // Get the frame of the message from the frameName tag in the plugin, if it exists
+   
+    // Get the frame of the message from the frame_name tag in the plugin, if it exists
     if (!this->sdf->HasElement("frame_name"))
     {
       ROS_INFO("BeaconRepub plugin missing <frameName>, defaults to /world");
@@ -90,25 +85,25 @@ class BeaconRepub : public SensorPlugin
       this->frame_name = this->sdf->Get<std::string>("frame_name");
     }
   
-    //Get the topic of the message from the topicName tag in the plugin, if it exists
+    // Get the topic of the message from the topic_name tag in the plugin, if it exists
     if (!this->sdf->HasElement("topic_name"))
-      {
-        ROS_INFO("BeaconRepub plugin missing <topicName>, defaults to /receiver");
-        this->topic_name = "/receiver";
-      }
-      else
-        this->topic_name = this->sdf->Get<std::string>("topic_name");
+    {
+      ROS_INFO("BeaconRepub plugin missing <topicName>, defaults to /receiver");
+      this->topic_name = "/receiver";
+    }
+    else
+    {
+      this->topic_name = this->sdf->Get<std::string>("topic_name");
+    }
 
     // TODO: Get Gazebo topic name using sdf or 'Name()/GetName()/GetLink()->Name() etc. 
     // Create a topic name
     std::string gzTopicName = "/gazebo/default/wirelessReceiver/link/wirelessReceiver/transceiver";
 
-    //std::string testTopicName = "/gazebo/" + this->model->GetWorld()->Name() + 
-
     // Subscribe to the topic, and register a callback
     this->sub = this->node->Subscribe(gzTopicName, &BeaconRepub::BeaconMsgCB, this);
 
-    //subscribe to /clock
+    // subscribe to /clock
     // TODO: Get ~/world_stats programmatically
     this->gz_clock_sub = this->node->Subscribe("/gazebo/default/world_stats", &BeaconRepub::ClockCB, this);
 
@@ -117,6 +112,7 @@ class BeaconRepub : public SensorPlugin
 
   }
 
+  // The callback for the gazebo WirelessNodes message
   public: void BeaconMsgCB(ConstWirelessNodesPtr &gmsg)
   {
     
@@ -129,24 +125,16 @@ class BeaconRepub : public SensorPlugin
       double gz_signal_level = gmsg->node(0).signal_level();
       double gz_frequency = gmsg->node(0).frequency();
       std::string gz_essid = gmsg->node(0).essid();
-      
-      
 
-      //std::cout << "Signal Level: " << siglevel << std::endl;
-
-      //commented out example float32 message
-      //std_msgs::Float32 rosmsg;
       beacon_pub::beacon rosmsg;
-      // //build message
-      //Header
+      // Build the ROS message
+      // Header
       rosmsg.header.seq = this->sequence_ctr;
-      
       rosmsg.header.stamp.sec = this->gz_sec;
       rosmsg.header.stamp.nsec = this->gz_nsec;
-      //TODO: get frame ID from sdf. Store frame ID as parameter of this class
       rosmsg.header.frame_id = this->frame_name;
 
-      // beacon info
+      // beacon params
       rosmsg.signal_level = gz_signal_level;
       rosmsg.essid = gz_essid;
       rosmsg.frequency = gz_frequency;
@@ -157,10 +145,10 @@ class BeaconRepub : public SensorPlugin
       //ROS_INFO("Callback Called! WirelessNodes Message Received");
     }
     //ROS_INFO("Callback Called! No WirelessNodes msg");
-    
-    
+ 
   }
 
+  // The callback for the WorldStatistics message (sim_time)
   public: void ClockCB(ConstWorldStatisticsPtr &gmsg)
   {
     if(gmsg!=0)
