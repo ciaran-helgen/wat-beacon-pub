@@ -10,6 +10,7 @@
 #include <gazebo/msgs/msgs.hh>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/shared_ptr.hpp>
+#include <string>
 
 #include <ros/ros.h>
 #include <std_msgs/Float32.h>
@@ -20,7 +21,11 @@ namespace gazebo
 class BeaconRepub : public ModelPlugin
 {
 
+  // Stores the Model Data
   private: physics::ModelPtr model;
+
+  // Stores SDF element data
+  private: sdf::ElementPtr sdf;
 
   //A node used for transport
   private: transport::NodePtr node;
@@ -31,12 +36,17 @@ class BeaconRepub : public ModelPlugin
   // Subscriber to get sim time
   private: transport::SubscriberPtr gz_clock_sub;
 
+  // Incrementing sequence number for ROS msg header
   private: unsigned int sequence_ctr = 0;
 
-  private: std::string frame_id;
-
+  //variables to store simulation time
   private: unsigned int gz_sec;
   private: unsigned int gz_nsec;
+
+  //ROS topic to publish to
+  private: std::string topic_name;
+  //ROS Frame for beacon msg header
+  private: std::string frame_name;
 
   //ROS node for publisher
   ros::NodeHandle n;
@@ -56,29 +66,52 @@ class BeaconRepub : public ModelPlugin
     }
 
     this->model = _parent;
+    this->sdf = _sdf;
 
     // Create the node
     this->node = transport::NodePtr(new transport::Node());
     
     this->node->Init();
-    std::string nodename = this->model->GetWorld()->Name();
+    std::string nodename = "world name: /gazebo/" + this->model->GetWorld()->Name() + "/" + this->model->GetName() + "/";
     ROS_INFO(nodename.c_str());
-    // TODO: Get topic name using sdf or 'Name()/GetName()/GetLink()->Name() etc. 
+
+    // Get the frame of the message from the frameName tag in the plugin, if it exists
+    if (!this->sdf->HasElement("frame_name"))
+    {
+      ROS_INFO("BeaconRepub plugin missing <frameName>, defaults to /world");
+      this->frame_name = "/world";
+    }
+    else
+    {
+      ROS_INFO("Before");
+      this->frame_name = this->sdf->Get<std::string>("frame_name");
+      ROS_INFO("After");
+    }
+  
+    //Get the topic of the message from the topicName tag in the plugin, if it exists
+    if (!this->sdf->HasElement("topic_name"))
+      {
+        ROS_INFO("BeaconRepub plugin missing <topicName>, defaults to /receiver");
+        this->topic_name = "/receiver";
+      }
+      else
+        this->topic_name = this->sdf->Get<std::string>("topic_name");
+
+    // TODO: Get Gazebo topic name using sdf or 'Name()/GetName()/GetLink()->Name() etc. 
     // Create a topic name
-    std::string topicName = "/gazebo/default/wirelessReceiver/link/wirelessReceiver/transceiver";
+    std::string gzTopicName = "/gazebo/default/wirelessReceiver/link/wirelessReceiver/transceiver";
+
+    //std::string testTopicName = "/gazebo/" + this->model->GetWorld()->Name() + 
 
     // Subscribe to the topic, and register a callback
-    this->sub = this->node->Subscribe(topicName, &BeaconRepub::BeaconMsgCB, this);
+    this->sub = this->node->Subscribe(gzTopicName, &BeaconRepub::BeaconMsgCB, this);
 
     //subscribe to /clock
+    // TODO: Get ~/world_stats programmatically
     this->gz_clock_sub = this->node->Subscribe("/gazebo/default/world_stats", &BeaconRepub::ClockCB, this);
-    ///gazebo/default/world_stats
-
 
     //Begin publisher for ROS message
-    //commented out example float32 publisher
-    //this->pub = n.advertise<std_msgs::Float32>("receiver", 1000);
-    this->pub = n.advertise<beacon_pub::beacon>("receiver", 1000);
+    this->pub = n.advertise<beacon_pub::beacon>(this->topic_name, 1000);
 
   }
 
@@ -108,9 +141,8 @@ class BeaconRepub : public ModelPlugin
       
       rosmsg.header.stamp.sec = this->gz_sec;
       rosmsg.header.stamp.nsec = this->gz_nsec;
-      //rosmsg.header.stamp = ros::Time::now();
       //TODO: get frame ID from sdf. Store frame ID as parameter of this class
-      rosmsg.header.frame_id = "placeholder_frame"; //this->frame_id
+      rosmsg.header.frame_id = this->frame_name;
 
       // beacon info
       rosmsg.signal_level = gz_signal_level;
@@ -120,8 +152,10 @@ class BeaconRepub : public ModelPlugin
       this->pub.publish(rosmsg);
       ros::spinOnce();
       this->sequence_ctr ++;
+      //ROS_INFO("Callback Called! WirelessNodes Message Received");
     }
-    //ROS_INFO("Callback Called!");
+    //ROS_INFO("Callback Called! No WirelessNodes msg");
+    
     
   }
 
