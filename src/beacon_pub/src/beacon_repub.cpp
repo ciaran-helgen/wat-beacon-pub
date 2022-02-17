@@ -96,16 +96,14 @@ class BeaconRepub : public SensorPlugin
       this->topic_name = this->sdf->Get<std::string>("topic_name");
     }
 
-    // TODO: Get Gazebo topic name using sdf or 'Name()/GetName()/GetLink()->Name() etc. 
-    // Create a topic name
-    std::string gzTopicName = "/gazebo/default/wirelessReceiver/link/wirelessReceiver/transceiver";
-
+    // Gets the topic of the sensor programmatically using the Topic() method
     // Subscribe to the topic, and register a callback
-    this->sub = this->node->Subscribe(gzTopicName, &BeaconRepub::BeaconMsgCB, this);
+    this->sub = this->node->Subscribe(this->receiverSensor->Topic(), 
+                                        &BeaconRepub::BeaconMsgCB, this);
 
-    // subscribe to /clock
-    // TODO: Get ~/world_stats programmatically
-    this->gz_clock_sub = this->node->Subscribe("/gazebo/default/world_stats", &BeaconRepub::ClockCB, this);
+    // subscribe to /world_stats to access sim_time
+    this->gz_clock_sub = this->node->Subscribe("~/world_stats", 
+                                                  &BeaconRepub::ClockCB, this);
 
     //Begin publisher for ROS message
     this->pub = n.advertise<beacon_pub::beacon>(this->topic_name, 1000);
