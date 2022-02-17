@@ -18,11 +18,11 @@
 
 namespace gazebo
 {
-class BeaconRepub : public ModelPlugin
+class BeaconRepub : public SensorPlugin
 {
 
   // Stores the Model Data
-  private: physics::ModelPtr model;
+  private: sensors::SensorPtr sensor;
 
   // Stores SDF element data
   private: sdf::ElementPtr sdf;
@@ -55,7 +55,7 @@ class BeaconRepub : public ModelPlugin
   ros::Publisher pub;
 
 
-  public: void Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
+  public: void Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf)
   {
     // Make sure the ROS node for Gazebo has already been initialized
     if (!ros::isInitialized())
@@ -65,7 +65,7 @@ class BeaconRepub : public ModelPlugin
       return;
     }
 
-    this->model = _parent;
+    this->sensor = _parent;
     this->sdf = _sdf;
 
     // Create the node
@@ -169,6 +169,6 @@ class BeaconRepub : public ModelPlugin
 
 };
 
-GZ_REGISTER_MODEL_PLUGIN(BeaconRepub)
+GZ_REGISTER_SENSOR_PLUGIN(BeaconRepub)
 }
 #endif

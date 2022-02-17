@@ -52,10 +52,6 @@
     </model>
     <!-- Wireless receiver sensor model -->
     <model name="wirelessReceiver">
-      <plugin name="BeaconRepub" filename="libbeacon_pub.so">
-        <frame_name>receiver_link</frame_name>
-        <topic_name>/receiver_a</topic_name>
-      </plugin>
       <static>true</static>
       <pose>0 -3 0.05 0 0 0</pose>
       <link name="link">
@@ -86,6 +82,10 @@
           </geometry>
         </collision>
         <sensor name="wirelessReceiver" type="wireless_receiver">
+          <plugin name="BeaconRepub" filename="libbeacon_pub.so">
+            <frame_name>receiver_link</frame_name>
+            <topic_name>/receiver_a</topic_name>
+          </plugin>
           <pose>0 0 .04 0 0 0</pose>
           <always_on>1</always_on>
           <update_rate>1</update_rate>
