@@ -43,7 +43,7 @@
           <visualize>true</visualize>
           <transceiver>
             <essid>helgenA</essid>
-            <frequency>868</frequency>
+            <frequency>868.7</frequency>
             <power>14.5</power>
             <gain>2.6</gain>
           </transceiver>
@@ -81,7 +81,7 @@
             </box>
           </geometry>
         </collision>
-        <sensor name="wirelessReceiver" type="wireless_receiver">
+        <sensor name="wirelessReceiverA" type="wireless_receiver">
           <plugin name="BeaconRepub" filename="libbeacon_pub.so">
             <frame_name>receiver_link</frame_name>
             <topic_name>/receiver_a</topic_name>
@@ -91,8 +91,8 @@
           <update_rate>1</update_rate>
           <visualize>true</visualize>
           <transceiver>
-            <min_frequency>876</min_frequency>
-            <max_frequency>869</max_frequency>
+            <min_frequency>868.6</min_frequency>
+            <max_frequency>868.8</max_frequency>
             <power>14.5</power>
             <gain>2.6</gain>
             <sensitivity>-90.0</sensitivity>
@@ -138,7 +138,7 @@
           <visualize>true</visualize>
           <transceiver>
             <essid>helgenB</essid>
-            <frequency>868</frequency>
+            <frequency>869</frequency>
             <power>14.5</power>
             <gain>2.6</gain>
           </transceiver>
@@ -176,18 +176,18 @@
             </box>
           </geometry>
         </collision>
-        <sensor name="wirelessReceiver" type="wireless_receiver">
+        <sensor name="wirelessReceiverB" type="wireless_receiver">
           <plugin name="BeaconRepub" filename="libbeacon_pub.so">
             <frame_name>receiver_link</frame_name>
-            <topic_name>/receiver_a</topic_name>
+            <topic_name>/receiver_b</topic_name>
           </plugin>
           <pose>0 0 .04 0 0 0</pose>
           <always_on>1</always_on>
           <update_rate>1</update_rate>
           <visualize>true</visualize>
           <transceiver>
-            <min_frequency>867</min_frequency>
-            <max_frequency>869</max_frequency>
+            <min_frequency>868.9</min_frequency>
+            <max_frequency>869.1</max_frequency>
             <power>14.5</power>
             <gain>2.6</gain>
             <sensitivity>-90.0</sensitivity>
