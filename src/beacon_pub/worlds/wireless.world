@@ -6,7 +6,7 @@
       <uri>model://ground_plane</uri>
     </include>
     <!-- Wireless transmitter sensor model -->
-    <model name="wirelessTransmitter">
+    <model name="wirelessTransmitterA">
       <static>true</static>
       <pose>0 0 0.05 0 0 0</pose>
       <link name="link">
@@ -37,13 +37,13 @@
           </geometry>
         </collision>
         <sensor name="wirelessTransmitter" type="wireless_transmitter">
-        <pose>0 0 .04 0 0 0</pose>
+        <pose>0 0 0 0 0 0</pose>
           <always_on>1</always_on>
           <update_rate>1</update_rate>
           <visualize>true</visualize>
           <transceiver>
-            <essid>helgen</essid>
-            <frequency>2442.0</frequency>
+            <essid>helgenA</essid>
+            <frequency>868</frequency>
             <power>14.5</power>
             <gain>2.6</gain>
           </transceiver>
@@ -51,9 +51,104 @@
       </link>
     </model>
     <!-- Wireless receiver sensor model -->
-    <model name="wirelessReceiver">
+    <model name="wirelessReceiverA">
       <static>true</static>
       <pose>0 -3 0.05 0 0 0</pose>
+      <link name="link">
+        <inertial>
+          <mass>0.1</mass>
+        </inertial>
+        <visual name="base">
+          <geometry>
+            <box>
+              <size>.05 .05 .05</size>
+            </box>
+          </geometry>
+        </visual>
+        <visual name="antenna">
+          <pose>0 0 .04 0 0 0</pose>
+          <geometry>
+            <cylinder>
+              <radius>.005</radius>
+              <length>.07</length>
+            </cylinder>
+          </geometry>
+        </visual>
+        <collision name="base">
+          <geometry>
+            <box>
+              <size>.05 .05 .05</size>
+            </box>
+          </geometry>
+        </collision>
+        <sensor name="wirelessReceiver" type="wireless_receiver">
+          <plugin name="BeaconRepub" filename="libbeacon_pub.so">
+            <frame_name>receiver_link</frame_name>
+            <topic_name>/receiver_a</topic_name>
+          </plugin>
+          <pose>0 0 0 0 0 0</pose>
+          <always_on>1</always_on>
+          <update_rate>1</update_rate>
+          <visualize>true</visualize>
+          <transceiver>
+            <min_frequency>876</min_frequency>
+            <max_frequency>869</max_frequency>
+            <power>14.5</power>
+            <gain>2.6</gain>
+            <sensitivity>-90.0</sensitivity>
+          </transceiver>
+        </sensor>
+      </link>
+    </model>
+     <!-- Wireless transmitter sensor model -->
+     <model name="wirelessTransmitterB">
+      <static>true</static>
+      <pose>0.1 0 0.05 0 0 0</pose>
+      <link name="link">
+        <inertial>
+          <mass>0.1</mass>
+        </inertial>
+        <visual name="base">
+          <geometry>
+            <box>
+              <size>.05 .05 .05</size>
+            </box>
+          </geometry>
+        </visual>
+        <visual name="antenna">
+          <pose>0 0 .04 0 0 0</pose>
+          <geometry>
+            <cylinder>
+              <radius>.005</radius>
+              <length>.07</length>
+            </cylinder>
+          </geometry>
+        </visual>
+        <collision name="base">
+          <geometry>
+            <box>
+              <size>.05 .05 .05</size>
+            </box>
+          </geometry>
+        </collision>
+        <sensor name="wirelessTransmitter" type="wireless_transmitter">
+        <pose>0 0 0 0 0 0</pose>
+          <always_on>1</always_on>
+          <update_rate>1</update_rate>
+          <visualize>true</visualize>
+          <transceiver>
+            <essid>helgenB</essid>
+            <frequency>868</frequency>
+            <power>14.5</power>
+            <gain>2.6</gain>
+          </transceiver>
+        </sensor>
+      </link>
+    </model>
+    <!-- Wireless receiver sensor model -->
+    <model name="wirelessReceiverB">
+      <static>true</static>
+      <pose>1 -3 0.05 0 0 0</pose>
       <link name="link">
         <inertial>
           <mass>0.1</mass>
@@ -91,8 +186,8 @@
           <update_rate>1</update_rate>
           <visualize>true</visualize>
           <transceiver>
-            <min_frequency>2412.0</min_frequency>
-            <max_frequency>2484.0</max_frequency>
+            <min_frequency>867</min_frequency>
+            <max_frequency>869</max_frequency>
             <power>14.5</power>
             <gain>2.6</gain>
             <sensitivity>-90.0</sensitivity>
