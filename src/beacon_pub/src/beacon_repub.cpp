@@ -109,8 +109,7 @@ class BeaconRepub : public SensorPlugin
                                                   &BeaconRepub::ClockCB, this);
 
     //Begin publisher for ROS message
-    //TODO: Make this publish from a vector of messages
-    //this->pub = n.advertise<beacon_pub::beacon>(this->topic_name, 1000);
+    this->pub = n.advertise<beacon_pub::beacon>(this->topic_name, 100);
 
   }
 
@@ -120,62 +119,41 @@ class BeaconRepub : public SensorPlugin
     
     if(gmsg!=0)
     {
-      // get signal level of zeroth wirelessnode in message 
-      // wireless_nodes.proto: message consists of repeated 'node' messages
-      // node(n) accesses the nth WirelessNode, whose data can be accessed
-      // as normal (essid, signal_level, frequency)
-
-      // Determine number of wirelessnode messages are in the message
-      //unsigned int num_beacons = gmsg->node_size();
-
-      for(int i = 0; i < gmsg->node_size(); i++)
+      // simple check to ensure only one tx-rx pair per channel
+      if(gmsg->node_size()>1)
       {
-        
-        //temp message#
-        beacon_pub::beacon temp_msg;
-        //create vector of ROS messages
+        ROS_INFO("Multiple messages received on same receiver, adjust tx and rx frequencies");
+      }
+      else
+      {
+        //ROS beacon message
+        beacon_pub::beacon rosmsg;
+
         // Variables to store message data
+        // Get data from of zeroth wirelessnode in message.
+        // wireless_nodes.proto message consists of repeated 'node' messages.
+        // node(n) accesses the nth WirelessNode, whose data can be accessed
+        // as normal (essid, signal_level, frequency)
         double gz_signal_level = gmsg->node(0).signal_level();
         double gz_frequency = gmsg->node(0).frequency();
         std::string gz_essid = gmsg->node(0).essid();
 
-        // // Build the ROS message
+        // Build the ROS message
         // Header
-        temp_msg.header.seq = this->sequence_ctr;
-        temp_msg.header.stamp.sec = this->gz_sec;
-        temp_msg.header.stamp.nsec = this->gz_nsec;
-        temp_msg.header.frame_id = this->frame_name;
+        rosmsg.header.seq = this->sequence_ctr;
+        rosmsg.header.stamp.sec = this->gz_sec;
+        rosmsg.header.stamp.nsec = this->gz_nsec;
+        rosmsg.header.frame_id = this->frame_name;
 
         // beacon params
-        temp_msg.signal_level = gz_signal_level;
-        temp_msg.essid = gz_essid;
-        temp_msg.frequency = gz_frequency;
+        rosmsg.signal_level = gz_signal_level;
+        rosmsg.essid = gz_essid;
+        rosmsg.frequency = gz_frequency;
 
-
-        this->beaconmsgs_v.push_back(temp_msg);
-
+        ros::spinOnce();
+        this->sequence_ctr ++;
       }
-      
-      ros::spinOnce();
-      this->sequence_ctr ++;
-
-      // beacon_pub::beacon rosmsg;
-      // // Build the ROS message
-      // // Header
-      // rosmsg.header.seq = this->sequence_ctr;
-      // rosmsg.header.stamp.sec = this->gz_sec;
-      // rosmsg.header.stamp.nsec = this->gz_nsec;
-      // rosmsg.header.frame_id = this->frame_name;
-
-      // // beacon params
-      // rosmsg.signal_level = gz_signal_level;
-      // rosmsg.essid = gz_essid;
-      // rosmsg.frequency = gz_frequency;
-
-      // this->pub.publish(rosmsg);
-      // ros::spinOnce();
-      // this->sequence_ctr ++;
-      //ROS_INFO("Callback Called! WirelessNodes Message Received");
+      ROS_INFO("Callback Called! WirelessNodes Message Received");
     }
     //ROS_INFO("Callback Called! No WirelessNodes msg");
  
