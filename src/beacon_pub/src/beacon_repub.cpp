@@ -108,19 +108,8 @@ class BeaconRepub : public SensorPlugin
       this->topic_name = this->sdf->Get<std::string>("topic_name");
     }
 
-
-    // // create transmitter sensor pointer
-    // sensors::SensorPtr transmitter_ptr;
-    // // find wirelessTransmitter sensor and instantiate a sensor object for it
-    // transmitter_ptr = sensors::SensorManager::Instance()->GetSensor("wirelessTransmitterA");
-    // // create a wireless transmitter pointer
-    // sensors::WirelessTransmitterPtr transmitSensor;
-    // // convert sensor pointer to wireless transmitter pointer
-    // transmitSensor = std::dynamic_pointer_cast<sensors::WirelessTransmitter>(transmitter_ptr);
-
-
-    // Parse all available wireless transmitters
-    // Number of transmitters detected in channel. Ensure this == 1
+    // Parse all wireless transmitters in the world
+    // The number of transmitters detected in channel. Ensure this == 1
     unsigned int tx_count = 0;
     sensors::Sensor_V sensors = sensors::SensorManager::Instance()->GetSensors();
     for (sensors::Sensor_V::iterator it = sensors.begin(); it != sensors.end(); ++it)
@@ -144,13 +133,13 @@ class BeaconRepub : public SensorPlugin
       ROS_INFO("Multiple transmitters (%i) found in channel. Modify tx and/or rx frequencies!", tx_count);
     }
 
-    // // Get the parent of the transmitter. Used to calculate pose in the global frame
-    // std::string transmitterParentName = this->transmitterSensor->ParentName();
-    // this->transmitterParent = this->world->EntityByName(transmitterParentName);
+    // Get the parent of the transmitter. Used to calculate pose in the global frame
+    std::string transmitterParentName = this->transmitterSensor->ParentName();
+    this->transmitterParent = this->world->EntityByName(transmitterParentName);
 
-    // // Get the parent of the receiver. Used to calculate pose in the global frame
-    // std::string receiverParentName = this->receiverSensor->ParentName();
-    // this->receiverParent = this->world->EntityByName(receiverParentName);
+    // Get the parent of the receiver. Used to calculate pose in the global frame
+    std::string receiverParentName = this->receiverSensor->ParentName();
+    this->receiverParent = this->world->EntityByName(receiverParentName);
 
 
 
@@ -183,12 +172,28 @@ class BeaconRepub : public SensorPlugin
       {
 
         //calculate pose of corresponding transmitter
-        //ignition::math::Pose3d transmitterPose = this->transmitterSensor->Pose() + this->transmitterParent->WorldPose();
+        ignition::math::Pose3d transmitterPose = this->transmitterSensor->Pose() + this->transmitterParent->WorldPose();
         //calculate the pose of the receiver
-        //ignition::math::Pose3d receiverPose = this->receiverSensor->Pose() + this->receiverParent->WorldPose();
+        ignition::math::Pose3d receiverPose = this->receiverSensor->Pose() + this->receiverParent->WorldPose();
 
-        //get the distance between them
-        //float min_dist = std::sqrt(  )
+        // get the distance between the transmitter and receiver
+        // Tx and rx pose coordinates
+        double beacon_dist;
+        beacon_dist = transmitterPose.Pos().Distance(receiverPose.Pos());
+        // std::cout << "Distance between beacons: " << tx_x << std::endl;
+
+        // Simulate time delay using sped of light in air
+        // C_Air = C_Vac / n_A
+        // n_A is the refractive index of air; 1.0003
+
+        const double C_air = gazebo::common::SpeedOfLight/1.0003;
+
+        // Propagation delay of light in air
+        // prop_delay = C_Air * distance
+
+        double prop_delay = beacon_dist/C_air;
+
+        std::cout << "Propagation delay: " << prop_delay << std::endl;
 
         //ROS beacon message
         beacon_pub::beacon rosmsg;
@@ -198,27 +203,32 @@ class BeaconRepub : public SensorPlugin
         // wireless_nodes.proto message consists of repeated 'node' messages.
         // node(n) accesses the nth WirelessNode, whose data can be accessed
         // as normal (essid, signal_level, frequency)
-        // double gz_signal_level = gmsg->node(0).signal_level();
-        // double gz_frequency = gmsg->node(0).frequency();
-        // std::string gz_essid = gmsg->node(0).essid();
+        double gz_signal_level = gmsg->node(0).signal_level();
+        double gz_frequency = gmsg->node(0).frequency();
+        std::string gz_essid = gmsg->node(0).essid();
 
-        // // Build the ROS message
-        // // Header
-        // rosmsg.header.seq = this->sequence_ctr;
-        // rosmsg.header.stamp.sec = this->gz_sec;
-        // rosmsg.header.stamp.nsec = this->gz_nsec;
-        // rosmsg.header.frame_id = this->frame_name;
+        // Build the ROS message
+        // Header
+        rosmsg.header.seq = this->sequence_ctr;
+        rosmsg.header.stamp.sec = this->gz_sec;
+        rosmsg.header.stamp.nsec = this->gz_nsec;
 
-        // // beacon params
-        // rosmsg.signal_level = gz_signal_level;
-        // rosmsg.essid = gz_essid;
-        // rosmsg.frequency = gz_frequency;
+        rosmsg.transmit_time.sec = this->gz_sec;
+        rosmsg.transmit_time.nsec = this->gz_nsec - prop_delay*1000000000;
 
+        rosmsg.header.frame_id = this->frame_name;
+
+        // beacon params
+        rosmsg.signal_level = gz_signal_level;
+        rosmsg.essid = gz_essid;
+        rosmsg.frequency = gz_frequency;
+
+        this->pub.publish(rosmsg);
         ros::spinOnce();
 
         this->sequence_ctr ++;
-        ROS_INFO("Callback Called! WirelessNodes Message Received");
-        std::cout << "rosmsg: " << rosmsg.header.seq << std::endl;
+        //ROS_INFO("Callback Called! WirelessNodes Message Received");
+        //std::cout << "rosmsg: " << rosmsg.header.seq << std::endl;
       }
       
       
