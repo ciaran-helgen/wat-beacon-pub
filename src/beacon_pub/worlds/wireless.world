@@ -6,189 +6,324 @@
       <uri>model://ground_plane</uri>
     </include>
 
-        <!-- Wireless transmitter sensor model -->
-        <model name="wirelessTransmitterB">
+        <!-- Wireless basestation (mat) model -->
+        <model name="basestation">
           <static>true</static>
-          <pose>0 0 0.05 0 0 0</pose>
-          <link name="link">
-            <inertial>
-              <mass>0.1</mass>
-            </inertial>
-            <visual name="base">
+          <link name="mat_link">
+            <pose>0 0 0.01 0 0 0</pose>
+            <visual name="mat">
               <geometry>
-                <box>
-                  <size>.05 .05 .05</size>
-                </box>
+                <plane>
+                  <size>1.1 1.1</size>
+                  <normal>0 0 1</normal>
+                </plane>
               </geometry>
+              <material>
+                <ambient>0.8 0.8 0.8 1</ambient>
+                <diffuse>0.8 0.8 0.8 1</diffuse>
+                <specular>0 0 0 1</specular>
+              </material>
             </visual>
-            <visual name="antenna">
-              <pose>0 0 .04 0 0 0</pose>
+          </link>
+          
+        <!-- Antenna 0 -->
+          <link name="ant0_link">
+            <visual name="ant_vis">
+              <pose>0.5 0.5 0.01 0 0 0</pose>
               <geometry>
                 <cylinder>
-                  <radius>.005</radius>
-                  <length>.07</length>
+                  <radius>.02</radius>
+                  <length>.001</length>
                 </cylinder>
               </geometry>
+              <material>
+                <ambient>0.1 0.1 0.1 1</ambient>
+                <diffuse>0.1 0.1 0.1 1</diffuse>
+                <specular>0 0 0 1</specular>
+              </material>
             </visual>
-            <collision name="base">
-              <geometry>
-                <box>
-                  <size>.05 .05 .05</size>
-                </box>
-              </geometry>
-            </collision>
-            <sensor name="wirelessTransmitter" type="wireless_transmitter">
-            <pose>0 0 .04 0 0 0</pose>
+            <sensor name="wirelessTransmitter0" type="wireless_transmitter">
+              <pose>0.5 0.5 0.01 0 0 0</pose>
               <always_on>1</always_on>
               <update_rate>1</update_rate>
               <visualize>true</visualize>
               <transceiver>
-                <essid>helgen</essid>
-                <frequency>2500.0</frequency>
+                <essid>TX0</essid>
+                <frequency>868.7</frequency>
                 <power>14.5</power>
-                <gain>2.6</gain>
+                <gain>5</gain>
               </transceiver>
             </sensor>
           </link>
-          
+          <!-- Antenna 1 -->
+          <link name="ant1_link">
+            <visual name="ant_vis">
+              <pose>0.5 -0.5 0.01 0 0 0</pose>
+              <geometry>
+                <cylinder>
+                  <radius>.02</radius>
+                  <length>.001</length>
+                </cylinder>
+              </geometry>
+              <material>
+                <ambient>0.1 0.1 0.1 1</ambient>
+                <diffuse>0.1 0.1 0.1 1</diffuse>
+                <specular>0 0 0 1</specular>
+              </material>
+            </visual>
+            <sensor name="wirelessTransmitter1" type="wireless_transmitter">
+              <pose>0.5 -0.5 0.01 0 0 0</pose>
+              <always_on>1</always_on>
+              <update_rate>1</update_rate>
+              <visualize>true</visualize>
+              <transceiver>
+                <essid>TX1</essid>
+                <frequency>868.9</frequency>
+                <power>14.5</power>
+                <gain>5</gain>
+              </transceiver>
+            </sensor>
+          </link>
 
-          <link name="link1">
-            <inertial>
-              <mass>0.1</mass>
-            </inertial>
-            <visual name="base">
-              <geometry>
-                <box>
-                  <size>.05 .05 .05</size>
-                </box>
-              </geometry>
-            </visual>
-            <visual name="antenna">
-              <pose>0 0 .04 0 0 0</pose>
+          <!-- Antenna 2 -->
+          <link name="ant2_link">
+            <visual name="ant_vis">
+              <pose>-0.5 -0.5 0.01 0 0 0</pose>
               <geometry>
                 <cylinder>
-                  <radius>.005</radius>
-                  <length>.07</length>
+                  <radius>.02</radius>
+                  <length>.001</length>
                 </cylinder>
               </geometry>
+              <material>
+                <ambient>0.1 0.1 0.1 1</ambient>
+                <diffuse>0.1 0.1 0.1 1</diffuse>
+                <specular>0 0 0 1</specular>
+              </material>
             </visual>
-            <collision name="base">
-              <geometry>
-                <box>
-                  <size>.05 .05 .05</size>
-                </box>
-              </geometry>
-            </collision>
-            <sensor name="wirelessTransmitter" type="wireless_transmitter">
-            <pose>0 0 .04 0 0 0</pose>
+            <sensor name="wirelessTransmitter2" type="wireless_transmitter">
+              <pose>-0.5 -0.5 0.01 0 0 0</pose>
               <always_on>1</always_on>
               <update_rate>1</update_rate>
               <visualize>true</visualize>
               <transceiver>
-                <essid>helgen</essid>
-                <frequency>2500.0</frequency>
+                <essid>TX2</essid>
+                <frequency>869.1</frequency>
                 <power>14.5</power>
-                <gain>2.6</gain>
+                <gain>5</gain>
               </transceiver>
             </sensor>
           </link>
-          
+
+          <!-- Antenna 3 -->
+          <link name="ant3_link">
+            <visual name="ant_vis">
+              <pose>-0.5 0.5 0.01 0 0 0</pose>
+              <geometry>
+                <cylinder>
+                  <radius>.02</radius>
+                  <length>.001</length>
+                </cylinder>
+              </geometry>
+              <material>
+                <ambient>0.1 0.1 0.1 1</ambient>
+                <diffuse>0.1 0.1 0.1 1</diffuse>
+                <specular>0 0 0 1</specular>
+              </material>
+            </visual>
+            <sensor name="wirelessTransmitter3" type="wireless_transmitter">
+              <pose>-0.5 0.5 0.01 0 0 0</pose>
+              <always_on>1</always_on>
+              <update_rate>1</update_rate>
+              <visualize>true</visualize>
+              <transceiver>
+                <essid>TX3</essid>
+                <frequency>869.3</frequency>
+                <power>14.5</power>
+                <gain>5</gain>
+              </transceiver>
+            </sensor>
+          </link>
+ 
         </model>
 
-    <!-- Wireless transmitter sensor model -->
-    <model name="wirelessTransmitter">
-      <static>true</static>
-      <pose>0 0 0.05 0 0 0</pose>
-      <link name="link">
-        <inertial>
-          <mass>0.1</mass>
-        </inertial>
-        <visual name="base">
-          <geometry>
-            <box>
-              <size>.05 .05 .05</size>
-            </box>
-          </geometry>
-        </visual>
-        <visual name="antenna">
-          <pose>0 0 .04 0 0 0</pose>
-          <geometry>
-            <cylinder>
-              <radius>.005</radius>
-              <length>.07</length>
-            </cylinder>
-          </geometry>
-        </visual>
-        <collision name="base">
-          <geometry>
-            <box>
-              <size>.05 .05 .05</size>
-            </box>
-          </geometry>
-        </collision>
-        <sensor name="wirelessTransmitterA" type="wireless_transmitter">
-        <pose>0 0 .04 0 0 0</pose>
-          <always_on>1</always_on>
-          <update_rate>1</update_rate>
-          <visualize>true</visualize>
-          <transceiver>
-            <essid>helgen</essid>
-            <frequency>2442.0</frequency>
-            <power>14.5</power>
-            <gain>2.6</gain>
-          </transceiver>
-        </sensor>
-      </link>
-    </model>
-    <!-- Wireless receiver sensor model -->
-    <model name="wirelessReceiver">
+    <!-- Simple drone model for testing -->
+    <model name="drone">
       <static>true</static>
       <pose>0 -3 0.05 0 0 0</pose>
-      <link name="link">
-        <inertial>
-          <mass>0.1</mass>
-        </inertial>
-        <visual name="base">
+      <link name="collision_body">
+        <collision name="body">
           <geometry>
             <box>
-              <size>.05 .05 .05</size>
-            </box>
-          </geometry>
-        </visual>
-        <visual name="antenna">
-          <pose>0 0 .04 0 0 0</pose>
-          <geometry>
-            <cylinder>
-              <radius>.005</radius>
-              <length>.07</length>
-            </cylinder>
-          </geometry>
-        </visual>
-        <collision name="base">
-          <geometry>
-            <box>
-              <size>.05 .05 .05</size>
+              <size>0.1 0.05 0.05</size>
             </box>
           </geometry>
         </collision>
-        <sensor name="wirelessReceiver" type="wireless_receiver">
+        <visual name="visual_outline">
+          <geometry>
+            <box>
+              <size>0.1 0.05 0.05</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.1 0.3 0.1 0.5</ambient>
+            <diffuse>0.1 0.3 0.1 0.5</diffuse>
+            <specular>0 0 0 1</specular>
+          </material>
+        </visual>
+
+      </link>
+      <!-- Antenna 0 -->
+      <link name="ant0_link">
+        <pose>0.01 0.01 0 0 0 0</pose>
+        <visual name="rx_visual">
+          <geometry>
+            <box>
+              <size>0.01 0.01 0.01</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse> 0 0 0 1 </diffuse>
+          </material>
+        </visual>
+        
+        <sensor name="wirelessReceiver0" type="wireless_receiver">
+          <pose>0.01 0.01 0 0 0 0</pose>
           <plugin name="BeaconRepub" filename="libbeacon_pub.so">
-            <frame_name>receiver_link</frame_name>
-            <topic_name>/receiver_a</topic_name>
+            <frame_name>receiver0_link</frame_name>
+            <topic_name>/receiver0</topic_name>
           </plugin>
-          <pose>0 0 .04 0 0 0</pose>
           <always_on>1</always_on>
           <update_rate>1</update_rate>
-          <visualize>true</visualize>
           <transceiver>
-            <min_frequency>2412.0</min_frequency>
-            <max_frequency>2484.0</max_frequency>
+            <min_frequency>868.6</min_frequency>
+            <max_frequency>868.8</max_frequency>
             <power>14.5</power>
-            <gain>2.6</gain>
-            <sensitivity>-90.0</sensitivity>
+            <gain>5</gain>
+            <sensitivity>-200.0</sensitivity>
           </transceiver>
         </sensor>
       </link>
+
+      <!-- Antenna 1 -->
+      <link name="ant1_link">
+        <pose>0.01 -0.01 0 0 0 0</pose>
+        <visual name="rx_visual">
+          <geometry>
+            <box>
+              <size>0.01 0.01 0.01</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse> 0 0 0 1 </diffuse>
+          </material>
+        </visual>
+        
+        <sensor name="wirelessReceiver1" type="wireless_receiver">
+          <pose>0.01 -0.01 0 0 0 0</pose>
+          <plugin name="BeaconRepub" filename="libbeacon_pub.so">
+            <frame_name>receiver1_link</frame_name>
+            <topic_name>/receiver1</topic_name>
+          </plugin>
+          <always_on>1</always_on>
+          <update_rate>1</update_rate>
+          <transceiver>
+            <min_frequency>868.8</min_frequency>
+            <max_frequency>869</max_frequency>
+            <power>14.5</power>
+            <gain>5</gain>
+            <sensitivity>-200.0</sensitivity>
+          </transceiver>
+        </sensor>
+      </link>
+
+      
+      <!-- Antenna 2 -->
+      <link name="ant2_link">
+        <pose>-0.01 -0.01 0 0 0 0</pose>
+        <visual name="rx_visual">
+          <geometry>
+            <box>
+              <size>0.01 0.01 0.01</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse> 0 0 0 1 </diffuse>
+          </material>
+        </visual>
+        
+        <sensor name="wirelessReceiver2" type="wireless_receiver">
+          <pose>-0.01 -0.01 0 0 0 0</pose>
+          <plugin name="BeaconRepub" filename="libbeacon_pub.so">
+            <frame_name>receiver2_link</frame_name>
+            <topic_name>/receiver2</topic_name>
+          </plugin>
+          <always_on>1</always_on>
+          <update_rate>1</update_rate>
+          <transceiver>
+            <min_frequency>869</min_frequency>
+            <max_frequency>869.2</max_frequency>
+            <power>14.5</power>
+            <gain>5</gain>
+            <sensitivity>-200.0</sensitivity>
+          </transceiver>
+        </sensor>
+      </link>
+
+      <!-- Antenna 3 -->
+      <link name="ant3_link">
+        <pose>-0.01 0.01 0 0 0 0</pose>
+        <visual name="rx_visual">
+          <geometry>
+            <box>
+              <size>0.01 0.01 0.01</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse> 0 0 0 1 </diffuse>
+          </material>
+        </visual>
+        
+        <sensor name="wirelessReceiver3" type="wireless_receiver">
+          <pose>-0.01 0.01 0 0 0 0</pose>
+          <plugin name="BeaconRepub" filename="libbeacon_pub.so">
+            <frame_name>receiver3_link</frame_name>
+            <topic_name>/receiver3</topic_name>
+          </plugin>
+          <always_on>1</always_on>
+          <update_rate>1</update_rate>
+          <transceiver>
+            <min_frequency>869.2</min_frequency>
+            <max_frequency>869.4</max_frequency>
+            <power>14.5</power>
+            <gain>5</gain>
+            <sensitivity>-200.0</sensitivity>
+          </transceiver>
+        </sensor>
+      </link>
+
+      <!-- Joints -->
+      <joint name="ant0_joint" type="fixed">
+        <parent>collision_body</parent>
+        <child>ant0_link</child>
+      </joint>
+
+      <joint name="ant1_joint" type="fixed">
+        <parent>collision_body</parent>
+        <child>ant1_link</child>
+      </joint>
+
+      <joint name="ant2_joint" type="fixed">
+        <parent>collision_body</parent>
+        <child>ant2_link</child>
+      </joint>
+
+      <joint name="ant3_joint" type="fixed">
+        <parent>collision_body</parent>
+        <child>ant3_link</child>
+      </joint>
+
+
     </model>
     <!-- A global light source -->
     <include>
