@@ -50,6 +50,7 @@
               </transceiver>
             </sensor>
           </link>
+          
 
           <link name="link1">
             <inertial>
