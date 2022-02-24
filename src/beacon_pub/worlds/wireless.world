@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<sdf version="1.4">
+<sdf version="1.6">
   <world name="default">
     <!-- Ground -->
     <include>
@@ -147,10 +147,11 @@
  
         </model>
 
+
     <!-- Simple drone model for testing -->
-    <model name="drone">
+    <actor name="drone">
       <static>true</static>
-      <pose>-3 0 0.05 0 0 0</pose>
+      <pose>-0.5 -0.5 1 0 0 0</pose>
       <link name="collision_body">
         <collision name="body">
           <geometry>
@@ -332,7 +333,64 @@
       </joint>
 
 
-    </model>
+      <!-- Actor script. Essentially a while(true) loop with waypoints -->
+      <script>
+        <loop>true</loop>
+        <delay_start>0.000000</delay_start>
+        <auto_start>true</auto_start>
+
+        <trajectory id="0" type="square" tension=1>
+          <!-- waypoint -->
+          <waypoint>
+             <time>0</time>
+             <pose>0.5 0.5 1 0 0 0</pose>
+          </waypoint>
+          <!-- transition -->
+          <waypoint>
+            <time>1</time>
+            <pose>0.5 0 1 0 0 -1.5708</pose>
+          </waypoint>
+          <!-- waypoint -->
+          <waypoint>
+             <time>2</time>
+             <pose>0.5 -0.5 1 0 0 -1.5708</pose>
+          </waypoint>
+          <!-- transition -->
+          <waypoint>
+            <time>3</time>
+            <pose>0 -0.5 1 0 0 -3.1416</pose>
+          </waypoint>
+          <!-- waypoint -->
+          <waypoint>
+             <time>4</time>
+             <pose>-0.5 -0.5 1 0 0 -3.1416</pose>
+          </waypoint>
+          <!-- transition -->
+          <waypoint>
+            <time>5</time>
+            <pose>-0.5 -0 1 0 0 1.5708</pose>
+          </waypoint>
+          <!-- waypoint -->
+          <waypoint>
+             <time>6</time>
+             <pose>-0.5 0.5 1 0 0 1.5708</pose>
+          </waypoint>
+          <!-- transition -->
+          <waypoint>
+            <time>7</time>
+            <pose>0 0.5 1 0 0 0</pose>
+          </waypoint>
+          <!-- waypoint -->
+          <waypoint>
+             <time>8</time>
+             <pose>0.5 0.5 1 0 0 0</pose>
+          </waypoint>
+       </trajectory>
+      
+      
+      </script>
+
+    </actor>
     <!-- A global light source -->
     <include>
       <uri>model://sun</uri>
