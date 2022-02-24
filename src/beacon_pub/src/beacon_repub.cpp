@@ -238,20 +238,18 @@ class BeaconRepub : public SensorPlugin
         rosmsg.header.stamp.sec = tmp_stamp.sec;
         rosmsg.header.stamp.nsec = tmp_stamp.nsec;
 
-        // // convert timestamp to seconds and subtract delay to get transmit time
-        // double tmp_sec = tmp_stamp.toSec() - prop_delay;
-
-        // // convert seconds back to timestamp format
-        // tmp_stamp.fromSec(tmp_sec);
-
         //convert timestamp to nanoseconds and subtract delay to get transmit time
         uint64_t tmp_nsec = tmp_stamp.toNSec() - prop_delay * 1000000000;
 
-        // convert seconds back to timestamp format
+        // convert nanoseconds back to timestamp format
         tmp_stamp.fromNSec(tmp_nsec);
 
+        // add transmit time to message
         rosmsg.transmit_time.sec = tmp_stamp.sec;
         rosmsg.transmit_time.nsec = tmp_stamp.nsec;
+        
+        // Add ground truth distance to message
+        rosmsg.debug_distance = beacon_dist;
 
         rosmsg.header.frame_id = this->frame_name;
 
