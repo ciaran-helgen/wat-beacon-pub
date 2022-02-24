@@ -114,6 +114,7 @@ class BeaconRepub : public SensorPlugin
     sensors::Sensor_V sensors = sensors::SensorManager::Instance()->GetSensors();
     for (sensors::Sensor_V::iterator it = sensors.begin(); it != sensors.end(); ++it)
     {
+      ROS_INFO("Sensor Found: %s", (*it)->Name().c_str());
       if ((*it)->Type() == "wireless_transmitter")
       {
         std::shared_ptr<gazebo::sensors::WirelessTransmitter> transmitter =
@@ -126,34 +127,54 @@ class BeaconRepub : public SensorPlugin
           std::cout << "Transmitter found on " << transmitter->Freq() << " MHz" <<std::endl;
           this->transmitterSensor = transmitter;
         }
+        else
+        { 
+          std::cout << "No transmitter found in range " << this->receiverSensor->MinFreqFiltered() << 
+            " - " << this->receiverSensor->MaxFreqFiltered() << " MHz" << std::endl;
+        }
       }
     }
     if (tx_count > 1)
     {
       ROS_INFO("Multiple transmitters (%i) found in channel. Modify tx and/or rx frequencies!", tx_count);
     }
+    // Debug output when no transmitter is found in the right frequency
+    if (this->transmitterSensor == 0)
+    {
+      if(this->sdf->GetParent()->GetParent() != 0)
+      {
+        ROS_INFO("0 No transmitter found in %s", this->sdf->GetParent()->GetParent()->GetAttribute("name")->GetAsString().c_str());
+      }
+      else
+      {
+        ROS_INFO("1 No transmitter found in %s", this->sdf->GetParent()->GetAttribute("name")->GetAsString().c_str());
+      }
+    }
+    // Only runs if a valid transmitter is found
+    else
+    {
+      // Get the parent of the transmitter. Used to calculate pose in the global frame
+      std::string transmitterParentName = this->transmitterSensor->ParentName();
+      this->transmitterParent = this->world->EntityByName(transmitterParentName);
 
-    // Get the parent of the transmitter. Used to calculate pose in the global frame
-    std::string transmitterParentName = this->transmitterSensor->ParentName();
-    this->transmitterParent = this->world->EntityByName(transmitterParentName);
-
-    // Get the parent of the receiver. Used to calculate pose in the global frame
-    std::string receiverParentName = this->receiverSensor->ParentName();
-    this->receiverParent = this->world->EntityByName(receiverParentName);
+      // Get the parent of the receiver. Used to calculate pose in the global frame
+      std::string receiverParentName = this->receiverSensor->ParentName();
+      this->receiverParent = this->world->EntityByName(receiverParentName);
 
 
 
-    // Gets the topic of the sensor programmatically using the Topic() method
-    // Subscribe to the topic, and register a callback
-    this->sub = this->node->Subscribe(this->receiverSensor->Topic(), 
-                                        &BeaconRepub::BeaconMsgCB, this);
+      // Gets the topic of the sensor programmatically using the Topic() method
+      // Subscribe to the topic, and register a callback
+      this->sub = this->node->Subscribe(this->receiverSensor->Topic(), 
+                                          &BeaconRepub::BeaconMsgCB, this);
 
-    // subscribe to /world_stats to access sim_time
-    this->gz_clock_sub = this->node->Subscribe("~/world_stats", 
-                                                  &BeaconRepub::ClockCB, this);
+      // subscribe to /world_stats to access sim_time
+      this->gz_clock_sub = this->node->Subscribe("~/world_stats", 
+                                                    &BeaconRepub::ClockCB, this);
 
-    //Begin publisher for ROS message
-    this->pub = n.advertise<beacon_pub::beacon>(this->topic_name, 10);
+      //Begin publisher for ROS message
+      this->pub = n.advertise<beacon_pub::beacon>(this->topic_name, 10);
+    }
 
   }
 
@@ -207,14 +228,30 @@ class BeaconRepub : public SensorPlugin
         double gz_frequency = gmsg->node(0).frequency();
         std::string gz_essid = gmsg->node(0).essid();
 
+        ros::Time tmp_stamp;
+        tmp_stamp.sec = this->gz_sec;
+        tmp_stamp.nsec = this->gz_nsec;
+
         // Build the ROS message
         // Header
         rosmsg.header.seq = this->sequence_ctr;
-        rosmsg.header.stamp.sec = this->gz_sec;
-        rosmsg.header.stamp.nsec = this->gz_nsec;
+        rosmsg.header.stamp.sec = tmp_stamp.sec;
+        rosmsg.header.stamp.nsec = tmp_stamp.nsec;
 
-        rosmsg.transmit_time.sec = this->gz_sec;
-        rosmsg.transmit_time.nsec = this->gz_nsec - prop_delay*1000000000;
+        // // convert timestamp to seconds and subtract delay to get transmit time
+        // double tmp_sec = tmp_stamp.toSec() - prop_delay;
+
+        // // convert seconds back to timestamp format
+        // tmp_stamp.fromSec(tmp_sec);
+
+        //convert timestamp to nanoseconds and subtract delay to get transmit time
+        uint64_t tmp_nsec = tmp_stamp.toNSec() - prop_delay * 1000000000;
+
+        // convert seconds back to timestamp format
+        tmp_stamp.fromNSec(tmp_nsec);
+
+        rosmsg.transmit_time.sec = tmp_stamp.sec;
+        rosmsg.transmit_time.nsec = tmp_stamp.nsec;
 
         rosmsg.header.frame_id = this->frame_name;
 
