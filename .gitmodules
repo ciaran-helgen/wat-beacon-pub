@@ -1,0 +1,3 @@
+[submodule "src/waypoint_gen"]
+	path = src/waypoint_gen
+	url = git@github.com:ciaran-helgen/waypoint_gen.git

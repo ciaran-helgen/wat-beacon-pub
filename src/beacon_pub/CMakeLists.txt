@@ -49,5 +49,10 @@ catkin_package(
     message_runtime
 )
 
+## build pose estimation node
+#add_executable(dist_est src/dist_est.cpp)
+#target_link_libraries(dist_est ${catkin_LIBRARIES})
+
+
 add_library(${PROJECT_NAME} SHARED src/beacon_repub.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
