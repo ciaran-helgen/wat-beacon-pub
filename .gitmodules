@@ -1,3 +1,6 @@
 [submodule "src/waypoint_gen"]
 	path = src/waypoint_gen
 	url = git@github.com:ciaran-helgen/waypoint_gen.git
+[submodule "src/waypoint_navigator"]
+	path = src/waypoint_navigator
+	url = git@github.com:ciaran-helgen/waypoint_navigator.git
