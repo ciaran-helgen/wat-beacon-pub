@@ -4,3 +4,9 @@
 [submodule "src/waypoint_navigator"]
 	path = src/waypoint_navigator
 	url = git@github.com:ciaran-helgen/waypoint_navigator.git
+[submodule "src/Trilateration-Python"]
+	path = src/Trilateration-Python
+	url = git@github.com:ciaran-helgen/Trilateration-Python.git
+[submodule "src/--force"]
+	path = src/--force
+	url = git@github.com:ciaran-helgen/waypoint_navigator.git
