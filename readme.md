@@ -18,9 +18,8 @@ $ code .
 
 # Installing the Simulation Packages
 
-1. Clone this repository into src
+1. Clone this repository into the workspace
 ```shell
-$ cd src
 $ git clone --recurse-submodules -j8 git@github.com:ciaran-helgen/wat-beacon-pub.git
 ```
 This will clone several packages:
