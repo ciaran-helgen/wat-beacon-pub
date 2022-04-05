@@ -31,6 +31,7 @@ This will clone several packages:
 The instructions are available here https://github.com/ciaran-helgen/waypoint_navigator/tree/master
 
 # Running the Demos
+There are examples available [here](https://github.com/ciaran-helgen/waypoint_navigator), but I have provided a useful demo below.
 Remember to source the catkin workspace whenever you open a new terminal
 ``` shell
 source devel/setup.bash
