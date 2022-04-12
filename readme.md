@@ -3,6 +3,14 @@ Development utilises this repository https://github.com/devrt/ros-devcontainer-v
 
 Ensure you have Docker, vscode and remote development extension for vscode installed.
 
+0. (Optional) The development container extracts the information from the .gitconfig file in the host system. It is important to ensure that the file exists and it is up to date. If the file is missing, create it and add the relevant information to it, e.g.:
+
+```
+[user]
+	name = Your Name
+	email = you@helgen.tech
+```
+
 1. Clone the repository:
 ```shell
 $ git clone git@github.com:devrt/ros-devcontainer-vscode.git
@@ -14,7 +22,7 @@ $ cd ros-devcontainer-vscode
 $ code .
 ```
 
-3. The option to reopen the container will pop up in the bottom right of the screen. Cllck it and you will enter the workspace of a ROS docker image
+3. The option to reopen the container will pop up in the bottom right of the screen. Click it and you will enter the workspace of a ROS docker image
 
 # Installing the Simulation Packages
 
