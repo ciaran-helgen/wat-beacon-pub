@@ -1,5 +1,2 @@
 build
 devel
-on_ground_at_y-3.bag
-src/beacon_pub/src/dist_est.cpp
-src/beacon_pub/src/pose_from_dists,cpp
