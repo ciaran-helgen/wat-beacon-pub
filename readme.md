@@ -41,6 +41,14 @@ git clone --branch=simulation-test-fix --recurse-submodules -j8 --remote-submodu
 - --remote-submodules ensures the specified branch in .gitmodules is cloned
 - src is specified as the target directory. Otherwise a wat-beacon-bub folder would be created at /workspace
 
+### 1.1 Older Git version
+if the --remote-submodules option is unavailable, run the following instead:
+```shell
+git clone --branch=simulation-test-fix --recurse-submodules -j8 git@github.com:ciaran-helgen/wat-beacon-pub.git src
+cd src/Trilateration-Python
+git checkout ros
+```
+
 ### 2. Install the simulation packages using rosinstall
 
 Note: You do not need to clone this repository as it is included as a submodule.
