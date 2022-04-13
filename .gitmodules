@@ -7,3 +7,4 @@
 [submodule "Trilateration-Python"]
 	path = Trilateration-Python
 	url = git@github.com:ciaran-helgen/Trilateration-Python.git
+	branch = ros
