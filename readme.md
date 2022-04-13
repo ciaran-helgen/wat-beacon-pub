@@ -35,6 +35,12 @@ This will clone several packages:
 - The waypoint_gen package which was a simple test of calling the /go_to_waypoint(s) service(s)
 - A fork of the waypoint_navigator package which includes a model of our drone with 4 rx beacons
 
+If you are using a different branch than master, e.g. simulation-test, switch to that branch now:
+``` shell
+cd /workspace/src/wat-beacon-pub
+git fetch origin simulation-test:simulation-test && git checkout simulation-test
+```
+
 2. Install the simulation packages using rosinstall
 The instructions are available here https://github.com/ciaran-helgen/waypoint_navigator/tree/master
 
