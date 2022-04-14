@@ -1,9 +1,10 @@
-[submodule "src/waypoint_gen"]
-	path = src/waypoint_gen
+[submodule "waypoint_gen"]
+	path = waypoint_gen
 	url = git@github.com:ciaran-helgen/waypoint_gen.git
-[submodule "src/waypoint_navigator"]
-	path = src/waypoint_navigator
+[submodule "waypoint_navigator"]
+	path = waypoint_navigator
 	url = git@github.com:ciaran-helgen/waypoint_navigator.git
-[submodule "src/Trilateration-Python"]
-	path = src/Trilateration-Python
+[submodule "Trilateration-Python"]
+	path = Trilateration-Python
 	url = git@github.com:ciaran-helgen/Trilateration-Python.git
+	branch = ros

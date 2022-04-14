@@ -13,35 +13,45 @@ Ensure you have Docker, vscode and remote development extension for vscode insta
 
 1. Clone the repository:
 ```shell
-$ git clone git@github.com:devrt/ros-devcontainer-vscode.git
+git clone git@github.com:devrt/ros-devcontainer-vscode.git
 ```
 
 2. Open the folder in vscode
 ```shell
-$ cd ros-devcontainer-vscode
-$ code .
+cd ros-devcontainer-vscode
+code .
 ```
 
 3. The option to reopen the container will pop up in the bottom right of the screen. Click it and you will enter the workspace of a ROS docker image
 
 # Installing the Simulation Packages
 
-1. Clone this repository into the workspace
+### 1. Clone this repository into the workspace
+
+Ensure there are no other files in the src folder, then run:
 ```shell
-$ git clone --recurse-submodules -j8 git@github.com:ciaran-helgen/wat-beacon-pub.git
+git clone --branch=simulation-test-fix --recurse-submodules -j8 --remote-submodules git@github.com:ciaran-helgen/wat-beacon-pub.git src
 ```
-This will clone several packages:
+### This will clone several packages:
 - The beacon_pub gazebo plugin which simulates comms propagation delay and provides ground truth beacon distance measurements
 - The waypoint_gen package which was a simple test of calling the /go_to_waypoint(s) service(s)
 - A fork of the waypoint_navigator package which includes a model of our drone with 4 rx beacons
+### Explanation of arguments
+- --recurse-submodules ensures the submodules are cloned.
+- --remote-submodules ensures the specified branch in .gitmodules is cloned
+- src is specified as the target directory. Otherwise a wat-beacon-bub folder would be created at /workspace
 
-If you are using a different branch than master, e.g. simulation-test, switch to that branch now:
-``` shell
-cd /workspace/src/wat-beacon-pub
-git fetch origin simulation-test:simulation-test && git checkout simulation-test
+### 1.1 Older Git version
+if the --remote-submodules option is unavailable, run the following instead:
+```shell
+git clone --branch=simulation-test-fix --recurse-submodules -j8 git@github.com:ciaran-helgen/wat-beacon-pub.git src
+cd src/Trilateration-Python
+git checkout ros
 ```
 
-2. Install the simulation packages using rosinstall
+### 2. Install the simulation packages using rosinstall
+
+Note: You do not need to clone this repository as it is included as a submodule.
 The instructions are available here https://github.com/ciaran-helgen/waypoint_navigator/tree/master
 
 # Running the Demos
