@@ -18,6 +18,7 @@ endif()
 # Load catkin and all dependencies required for this package
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  rospy
   gazebo_ros
   std_msgs
   message_generation
@@ -44,10 +45,14 @@ generate_messages(
 catkin_package(
   DEPENDS
     roscpp
+    rospy
     gazebo_ros
     std_msgs
     message_runtime
 )
-
 add_library(${PROJECT_NAME} SHARED src/beacon_repub.cpp)
+
+# let catkin know that the library depends on the message header. Build the message first
+add_dependencies(${PROJECT_NAME} beacon_pub_generate_messages_cpp)
+
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})

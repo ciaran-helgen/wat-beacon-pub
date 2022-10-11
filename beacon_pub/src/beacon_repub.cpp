@@ -1,6 +1,8 @@
 #ifndef _BEACON_REPUB_PLUGIN_HH_
 #define _BEACON_REPUB_PLUGIN_HH_
 
+#define SIM_NOISE
+
 #include <gazebo/gazebo.hh>
 #include <gazebo/common/Plugin.hh>
 #include <gazebo/sensors/Sensor.hh>
@@ -11,6 +13,7 @@
 #include <gazebo/msgs/msgs.hh>
 #include <boost/shared_ptr.hpp>
 #include <string>
+#include <random>
 
 #include <ros/ros.h>
 #include <beacon_pub/beacon.h>
@@ -63,6 +66,9 @@ class BeaconRepub : public SensorPlugin
   //ROS publisher
   ros::Publisher pub;
 
+  //noise model
+  private: std::normal_distribution<double> dist = std::normal_distribution<double>(0.0, 0.01);
+  private: std::default_random_engine generator;
 
   public: void Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sdf)
   {
@@ -174,6 +180,8 @@ class BeaconRepub : public SensorPlugin
 
       //Begin publisher for ROS message
       this->pub = n.advertise<beacon_pub::beacon>(this->topic_name, 10);
+
+
     }
 
   }
@@ -181,7 +189,6 @@ class BeaconRepub : public SensorPlugin
   // The callback for the gazebo WirelessNodes message
   public: void BeaconMsgCB(ConstWirelessNodesPtr &gmsg)
   {
-    
     if(gmsg!=0)
     {
       // simple check to ensure only one tx-rx pair per channel
@@ -214,7 +221,7 @@ class BeaconRepub : public SensorPlugin
 
         double prop_delay = beacon_dist/C_air;
 
-        std::cout << "Propagation delay: " << prop_delay << std::endl;
+        //std::cout << "Propagation delay: " << prop_delay << std::endl;
 
         //ROS beacon message
         beacon_pub::beacon rosmsg;
@@ -247,7 +254,13 @@ class BeaconRepub : public SensorPlugin
         // add transmit time to message
         rosmsg.transmit_time.sec = tmp_stamp.sec;
         rosmsg.transmit_time.nsec = tmp_stamp.nsec;
-        
+        #ifdef SIM_NOISE
+        beacon_dist = beacon_dist + ignition::math::Rand::DblUniform(-0.01, 0.01);
+        #endif
+        //std::cout << "dist: " << beacon_dist << std::endl;
+        //#endif
+        //add noise 
+
         // Add ground truth distance to message
         rosmsg.debug_distance = beacon_dist;
 
